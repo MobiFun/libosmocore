@@ -150,11 +150,3 @@ running nibble tests...
      OUT: 0b00bbabef
 [6] L IN: b00bbabeface, nibble 11:
      OUT: 00bbabefac
-[8] R IN: f00dcafedeadbeef, nibble 12:
-     OUT: 0f00dcafedea
-[8] L IN: f00dcafedeadbeef, nibble 12:
-     OUT: 00dcafedeadb
-[6] R IN: b00bbabeface, nibble 12:
-     OUT: 0b00bbabefac
-[6] L IN: b00bbabeface, nibble 12:
-     OUT: 00bbabeface0

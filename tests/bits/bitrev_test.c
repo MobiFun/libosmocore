@@ -293,7 +293,7 @@ int main(int argc, char **argv)
 	const uint8_t in1[] = { 0xF0, 0x0D, 0xCA, 0xFE, 0xDE, 0xAD, 0xBE, 0xEF },
 		      in2[] = { 0xB0, 0x0B, 0xBA, 0xBE, 0xFA, 0xCE };
 
-	for (offs = 0; offs < 13; offs++) {
+	for (offs = 0; offs < 12; offs++) {
 		sh_chk(in1, ARRAY_SIZE(in1), offs, true);
 		sh_chk(in1, ARRAY_SIZE(in1), offs, false);
 		sh_chk(in2, ARRAY_SIZE(in2), offs, true);
