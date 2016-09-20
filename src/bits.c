@@ -21,7 +21,8 @@
  */
 
 #include <stdint.h>
-
+#include <stdio.h>
+#include <string.h>
 #include <osmocom/core/bits.h>
 
 /*! \addtogroup bits
@@ -100,9 +101,10 @@ void osmo_nibble_shift_left_unal(uint8_t *out, const uint8_t *in,
 	if (!num_whole_bytes)
 		return;
 
-	for (i = 0; i < num_whole_bytes; i++)
+	for (i = 0; i < num_whole_bytes; i++) {
 		out[i] = ((in[i] & 0xF) << 4) | (in[i + 1] >> 4);
-
+		fprintf(stderr, "%d: nibs [%d/%d], {%d} <- {%d},{%d}\n", i, num_whole_bytes, num_nibbles, out[i], in[i], in[i + 1]);
+	}
 	/* shift the last nibble, in case there's an odd count */
 	i = num_whole_bytes;
 	if (num_nibbles & 1)

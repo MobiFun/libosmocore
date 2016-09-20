@@ -205,7 +205,7 @@ check16(uint16_t test, enum END e)
 	printcheck16(e, test, test, (BE == e) ? s : NULL, print);
 }
 
-static void sh_chk(const uint8_t *in, uint8_t len, unsigned int nib, bool r)
+static inline void sh_chk(const uint8_t *in, uint8_t len, unsigned int nib, bool r)
 {
 	uint8_t x[len];
 	if (r)
@@ -213,11 +213,11 @@ static void sh_chk(const uint8_t *in, uint8_t len, unsigned int nib, bool r)
 	else
 		osmo_nibble_shift_left_unal(x, in, nib);
 
-	printf("[%u] %s IN: %s, nibble %u:", len, r ? "R" : "L",
+	fprintf(stderr, "[%u] %s IN: %s, nibble %u:", len, r ? "R" : "L",
 	       osmo_hexdump_nospc(in, len), nib);
 	/* do NOT combine those printfs: osmo_hexdump* use static buffer which
 	   WILL screw things up in that case */
-	printf("\n     OUT: %s\n", osmo_hexdump_nospc(x, nib/2));
+	fprintf(stderr, "\n     OUT: %s\n", osmo_hexdump_nospc(x, nib/2));
 }
 
 int main(int argc, char **argv)
@@ -288,7 +288,7 @@ int main(int argc, char **argv)
 	check16(0, BE);
 	check16(0, LE);
 
-	printf("running nibble tests...\n");
+	fprintf(stderr, "running nibble tests...\n");
 
 	const uint8_t in1[] = { 0xF0, 0x0D, 0xCA, 0xFE, 0xDE, 0xAD, 0xBE, 0xEF },
 		      in2[] = { 0xB0, 0x0B, 0xBA, 0xBE, 0xFA, 0xCE };
