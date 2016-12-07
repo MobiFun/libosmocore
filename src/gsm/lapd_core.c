@@ -196,7 +196,7 @@ static void lapd_start_t200(struct lapd_datalink *dl)
 {
 	if (osmo_timer_pending(&dl->t200))
 		return;
-	LOGP(DLLAPD, LOGL_INFO, "start T200\n");
+	LOGP(DLLAPD, LOGL_INFO, "start T200 (%p)\n", dl);
 	osmo_timer_schedule(&dl->t200, dl->t200_sec, dl->t200_usec);
 }
 
@@ -204,7 +204,7 @@ static void lapd_start_t203(struct lapd_datalink *dl)
 {
 	if (osmo_timer_pending(&dl->t203))
 		return;
-	LOGP(DLLAPD, LOGL_INFO, "start T203\n");
+	LOGP(DLLAPD, LOGL_INFO, "start T203 (%p)\n", dl);
 	osmo_timer_schedule(&dl->t203, dl->t203_sec, dl->t203_usec);
 }
 
@@ -212,7 +212,7 @@ static void lapd_stop_t200(struct lapd_datalink *dl)
 {
 	if (!osmo_timer_pending(&dl->t200))
 		return;
-	LOGP(DLLAPD, LOGL_INFO, "stop T200\n");
+	LOGP(DLLAPD, LOGL_INFO, "stop T200 (%p)\n", dl);
 	osmo_timer_del(&dl->t200);
 }
 
@@ -220,13 +220,13 @@ static void lapd_stop_t203(struct lapd_datalink *dl)
 {
 	if (!osmo_timer_pending(&dl->t203))
 		return;
-	LOGP(DLLAPD, LOGL_INFO, "stop T203\n");
+	LOGP(DLLAPD, LOGL_INFO, "stop T203 (%p)\n", dl);
 	osmo_timer_del(&dl->t203);
 }
 
 static void lapd_dl_newstate(struct lapd_datalink *dl, uint32_t state)
 {
-	LOGP(DLLAPD, LOGL_INFO, "new state %s -> %s\n",
+	LOGP(DLLAPD, LOGL_INFO, "new state (%p) %s -> %s\n", dl,
 		lapd_state_names[dl->state], lapd_state_names[state]);
 
 	if (state != LAPD_STATE_MF_EST && dl->state == LAPD_STATE_MF_EST) {
@@ -287,8 +287,8 @@ void lapd_dl_init(struct lapd_datalink *dl, uint8_t k, uint8_t v_range,
 		}
 	}
 
-	LOGP(DLLAPD, LOGL_INFO, "Init DL layer: sequence range = %d, k = %d, "
-		"history range = %d\n", dl->v_range, dl->k, dl->range_hist);
+	LOGP(DLLAPD, LOGL_INFO, "Init DL layer (%p): sequence range = %d, k = %d, "
+		"history range = %d\n", dl, dl->v_range, dl->k, dl->range_hist);
 
 	lapd_dl_newstate(dl, LAPD_STATE_IDLE);
 
@@ -303,7 +303,7 @@ void lapd_dl_reset(struct lapd_datalink *dl)
 {
 	if (dl->state == LAPD_STATE_IDLE)
 		return;
-	LOGP(DLLAPD, LOGL_INFO, "Resetting LAPDm instance\n");
+	LOGP(DLLAPD, LOGL_INFO, "Resetting LAPDm instance (%p)\n", dl);
 	/* enter idle state (and remove eventual cont_res) */
 	lapd_dl_newstate(dl, LAPD_STATE_IDLE);
 	/* flush buffer */
@@ -377,8 +377,8 @@ static int mdl_error(uint8_t cause, struct lapd_msg_ctx *lctx)
 	struct lapd_datalink *dl = lctx->dl;
 	struct osmo_dlsap_prim dp;
 
-	LOGP(DLLAPD, LOGL_NOTICE, "sending MDL-ERROR-IND cause %d\n",
-		cause);
+	LOGP(DLLAPD, LOGL_NOTICE, "sending MDL-ERROR-IND cause %d from state %s (%p)\n",
+	     cause, lapd_state_names[dl->state], dl);
 	osmo_prim_init(&dp.oph, 0, PRIM_MDL_ERROR, PRIM_OP_INDICATION, NULL);
 	dp.u.error_ind.cause = cause;
 	return dl->send_dlsap(&dp, lctx);
@@ -533,6 +533,8 @@ static int lapd_reestablish(struct lapd_datalink *dl)
 	struct osmo_dlsap_prim dp;
 	struct msgb *msg;
 
+	LOGP(DLLAPD, LOGL_DEBUG, "lapd reestablish (%p)\n", dl);
+
 	msg = lapd_msgb_alloc(0, "DUMMY");
 	osmo_prim_init(&dp.oph, 0, PRIM_DL_EST, PRIM_OP_REQUEST, msg);
 	
@@ -544,8 +546,8 @@ static void lapd_t200_cb(void *data)
 {
 	struct lapd_datalink *dl = data;
 
-	LOGP(DLLAPD, LOGL_INFO, "Timeout T200 (%p) state=%d\n", dl,
-		(int) dl->state);
+	LOGP(DLLAPD, LOGL_INFO, "Timeout T200 (%p) state=%s\n", dl,
+		lapd_state_names[dl->state]);
 
 	switch (dl->state) {
 	case LAPD_STATE_SABM_SENT:
@@ -663,8 +665,8 @@ static void lapd_t200_cb(void *data)
 		}
 		break;
 	default:
-		LOGP(DLLAPD, LOGL_INFO, "T200 expired in unexpected "
-			"dl->state %d\n", (int) dl->state);
+		LOGP(DLLAPD, LOGL_INFO, "T200 (%p) expired in unexpected "
+			"dl->state %s\n", dl, lapd_state_names[dl->state]);
 	}
 }
 
@@ -673,8 +675,8 @@ static void lapd_t203_cb(void *data)
 {
 	struct lapd_datalink *dl = data;
 
-	LOGP(DLLAPD, LOGL_INFO, "Timeout T203 (%p) state=%d\n", dl,
-		(int) dl->state);
+	LOGP(DLLAPD, LOGL_INFO, "Timeout T203 (%p) state=%s\n", dl,
+		lapd_state_names[dl->state]);
 
 	if (dl->state != LAPD_STATE_MF_EST) {
 		LOGP(DLLAPD, LOGL_ERROR, "T203 fired outside MF EST state, "
@@ -1382,6 +1384,8 @@ static int lapd_rx_s(struct msgb *msg, struct lapd_msg_ctx *lctx)
 					"state received\n");
 			/* send MDL ERROR INIDCATION to L3 */
 			if (lctx->cr == dl->cr.rem2loc.resp && lctx->p_f) {
+				LOGP(DLLAPD, LOGL_ERROR,
+				     "unsolicited supervisory response!\n");
 				mdl_error(MDL_CAUSE_UNSOL_SPRV_RESP, lctx);
 			}
 
