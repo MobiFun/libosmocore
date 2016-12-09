@@ -288,7 +288,7 @@ void lapd_dl_init(struct lapd_datalink *dl, uint8_t k, uint8_t v_range,
 	}
 
 	LOGP(DLLAPD, LOGL_INFO, "Init DL layer: sequence range = %d, k = %d, "
-		"history range = %d\n (%p)", dl->v_range, dl->k,
+		"history range = %d (%p)\n", dl->v_range, dl->k,
 		dl->range_hist, dl);
 
 	lapd_dl_newstate(dl, LAPD_STATE_IDLE);
@@ -547,7 +547,7 @@ static void lapd_t200_cb(void *data)
 {
 	struct lapd_datalink *dl = data;
 
-	LOGP(DLLAPD, LOGL_INFO, "Timeout T200 state=%s\n (dl=%p)",
+	LOGP(DLLAPD, LOGL_INFO, "Timeout T200 state=%s (dl=%p)\n",
 		lapd_state_names[dl->state], dl);
 
 	switch (dl->state) {
@@ -1064,7 +1064,7 @@ static int lapd_rx_u(struct msgb *msg, struct lapd_msg_ctx *lctx)
 			 * parameters" is sent to the mobile management entity.
 			 */
 			LOGP(DLLAPD, LOGL_ERROR,
-				"U frame iwth incorrect parameters (dl=%p)", dl);
+			     "U frame iwth incorrect parameters (dl=%p)\n", dl);
 			msgb_free(msg);
 			mdl_error(MDL_CAUSE_UFRM_INC_PARAM, lctx);
 			return -EIO;
