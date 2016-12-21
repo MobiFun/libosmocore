@@ -74,7 +74,7 @@ enum gsm_band gsm_band_parse(const char *mhz);
  * 	    This is the same like strlen(decoded).
  */
 int gsm_7bit_decode_n(char *decoded, size_t n, const uint8_t *user_data, uint8_t length);
-
+int gsm_ucs2_encode_n(uint8_t *ucs2_buffer, size_t ucs2_buffer_size, uint8_t *utf8_string, size_t utf8_string_len);
 /*!
  * \brief Decode a sequence of 7 bit characters (USSD encoding).
  *

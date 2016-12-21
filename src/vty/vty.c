@@ -1431,7 +1431,7 @@ int vty_read(struct vty *vty)
 				vty->escape = VTY_PRE_ESCAPE;
 			break;
 		default:
-			if (buf[i] > 31 && buf[i] < 127)
+			if (buf[i] > 31 && buf[i] < 255)///UCS2
 				vty_self_insert(vty, buf[i]);
 			break;
 		}
