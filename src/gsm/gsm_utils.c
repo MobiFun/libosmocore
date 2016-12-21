@@ -205,6 +205,37 @@ int gsm_7bit_decode_n_ussd(char *text, size_t n, const uint8_t *user_data, uint8
 	return nchars;
 }
 
+uint16_t gsm_ucs2_decode_n(char *decoded, const uint16_t decoded_buf_length, const uint8_t *user_data, const uint8_t length)
+{
+    uint16_t i, j = 0;
+    
+    for (i = 0; i < length; i++) {
+        uint16_t ucs2;
+        
+        ucs2 = ((user_data[2 * i] << 8) | user_data[2 * i + 1]);
+        if (ucs2 < 0x80) {
+            if (j >= decoded_buf_length-1)
+                break;
+            decoded[j++] = ucs2;
+        } else if (ucs2 >= 0x80  && ucs2 < 0x800) {
+            if (j >= decoded_buf_length-2)
+                break;
+            decoded[j++] = (ucs2 >> 6)   | 0xC0;
+            decoded[j++] = (ucs2 & 0x3F) | 0x80;
+        } else if (ucs2 >= 0x800 && ucs2 < 0xFFFF) {
+            if (j >= decoded_buf_length-3)
+                break;
+            decoded[j++] = ((ucs2 >> 12)       ) | 0xE0;
+            decoded[j++] = ((ucs2 >> 6 ) & 0x3F) | 0x80;
+            decoded[j++] = ((ucs2      ) & 0x3F) | 0x80;
+        }
+    }
+    decoded[j] = '\0';
+    decoded[j+1] = '\0';
+    
+    return j;
+}
+
 /* GSM 03.38 6.2.1 Prepare character packing */
 int gsm_septet_encode(uint8_t *result, const char *data)
 {

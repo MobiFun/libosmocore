@@ -108,6 +108,7 @@ int gsm_septets2octets(uint8_t *result, const uint8_t *rdata, uint8_t septet_len
 int gsm_septet_encode(uint8_t *result, const char *data);
 uint8_t gsm_get_octet_len(const uint8_t sept_len);
 int gsm_7bit_decode_n_hdr(char *decoded, size_t n, const uint8_t *user_data, uint8_t length, uint8_t ud_hdr_ind);
+uint16_t gsm_ucs2_decode_n(char *decoded, const uint16_t decoded_buf_length, const uint8_t *user_data, const uint8_t length);
 
 unsigned int ms_class_gmsk_dbm(enum gsm_band band, int ms_class);
 

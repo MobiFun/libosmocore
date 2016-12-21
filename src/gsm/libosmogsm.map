@@ -217,6 +217,7 @@ gsm_7bit_encode_oct;
 gsm_7bit_decode_n;
 gsm_7bit_decode_n_ussd;
 gsm_7bit_decode_n_hdr;
+gsm_ucs2_decode_n;
 gsm_7bit_encode_n;
 gsm_7bit_encode_n_ussd;
 gsm_ucs2_encode_n;
